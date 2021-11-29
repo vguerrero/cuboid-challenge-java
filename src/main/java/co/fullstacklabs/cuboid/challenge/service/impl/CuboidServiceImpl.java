@@ -56,6 +56,7 @@ public class CuboidServiceImpl implements CuboidService {
 
     /**
      * List all cuboids
+     *
      * @return List<CuboidDTO>
      */
     @Override
@@ -65,9 +66,11 @@ public class CuboidServiceImpl implements CuboidService {
         return cuboids.stream().map(bag -> mapper.map(bag, CuboidDTO.class))
                 .collect(Collectors.toList());
     }
+
     private Bag getBagById(long bagId) {
         return bagRepository.findById(bagId).orElseThrow(() -> new ResourceNotFoundException("Bag not found"));
     }
+
     private Cuboid getCuboidById(long cuboidId) {
         return repository.findById(cuboidId).orElseThrow(() -> new ResourceNotFoundException("Cuboid not found"));
     }
@@ -86,7 +89,7 @@ public class CuboidServiceImpl implements CuboidService {
      * @param cuboidDTO DTO with cuboid properties to be persisted
      * @return CuboidDTO with the data created
      */
-    public CuboidDTO update(CuboidDTO cuboidDTO){
+    public CuboidDTO update(CuboidDTO cuboidDTO) {
         if (cuboidDTO.getId() == null) {
             throw new ResourceNotFoundException("Cuboid id can't be null");
         }
@@ -98,9 +101,15 @@ public class CuboidServiceImpl implements CuboidService {
         return mapper.map(cuboid, CuboidDTO.class);
     }
 
+    /**
+     * Delete cuboid by id.
+     *
+     * @param cuboidId
+     * @return void
+     */
     public void delete(long cuboidId) {
         Cuboid cuboid = getCuboidById(cuboidId);
         repository.delete(cuboid);
     }
-  
+
 }
