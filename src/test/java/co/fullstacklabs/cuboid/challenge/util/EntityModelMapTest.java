@@ -34,6 +34,7 @@ class EntityModelMapTest {
     @Test
     void testBagMapping() {
         BagDTO bagDTO = mapper.map(bag, BagDTO.class);
+        bagDTO.setPayloadVolume();
         Assertions.assertThat(bagDTO.getId()).isEqualTo(bag.getId());
         Assertions.assertThat(bagDTO.getTitle()).isEqualTo(bag.getTitle());
         Assertions.assertThat(bagDTO.getVolume()).isEqualTo(bag.getVolume());
@@ -45,6 +46,7 @@ class EntityModelMapTest {
     @Test
     void testCuboidMapping() {
         CuboidDTO cuboidDTO = mapper.map(cuboid1, CuboidDTO.class);
+        cuboidDTO.calculateVolume();
         Assertions.assertThat(cuboidDTO.getId()).isEqualTo(cuboid1.getId());
         Assertions.assertThat(cuboidDTO.getWidth()).isEqualTo(cuboid1.getWidth());
         Assertions.assertThat(cuboidDTO.getDepth()).isEqualTo(cuboid1.getDepth());

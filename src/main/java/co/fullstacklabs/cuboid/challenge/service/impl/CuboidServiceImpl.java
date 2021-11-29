@@ -2,6 +2,7 @@ package co.fullstacklabs.cuboid.challenge.service.impl;
 
 import co.fullstacklabs.cuboid.challenge.dto.CuboidDTO;
 import co.fullstacklabs.cuboid.challenge.exception.ResourceNotFoundException;
+import co.fullstacklabs.cuboid.challenge.exception.UnprocessableEntityException;
 import co.fullstacklabs.cuboid.challenge.model.Bag;
 import co.fullstacklabs.cuboid.challenge.model.Cuboid;
 import co.fullstacklabs.cuboid.challenge.repository.BagRepository;
@@ -55,6 +56,7 @@ public class CuboidServiceImpl implements CuboidService {
 
     /**
      * List all cuboids
+     *
      * @return List<CuboidDTO>
      */
     @Override
@@ -64,10 +66,50 @@ public class CuboidServiceImpl implements CuboidService {
         return cuboids.stream().map(bag -> mapper.map(bag, CuboidDTO.class))
                 .collect(Collectors.toList());
     }
+
     private Bag getBagById(long bagId) {
         return bagRepository.findById(bagId).orElseThrow(() -> new ResourceNotFoundException("Bag not found"));
     }
 
+    private Cuboid getCuboidById(long cuboidId) {
+        return repository.findById(cuboidId).orElseThrow(() -> new ResourceNotFoundException("Cuboid not found"));
+    }
 
-  
+    private void validateBagCapacity(CuboidDTO cuboidDTO) {
+        Bag bag = getBagById(cuboidDTO.getBagId());
+        double cuboidVolume = cuboidDTO.calculateVolume();
+        if (cuboidVolume > bag.getVolume()) {
+            throw new UnprocessableEntityException("Bag Not Enough Capacity");
+        }
+    }
+
+    /**
+     * Update cuboid and add it to its bag checking the bag available capacity.
+     *
+     * @param cuboidDTO DTO with cuboid properties to be persisted
+     * @return CuboidDTO with the data created
+     */
+    public CuboidDTO update(CuboidDTO cuboidDTO) {
+        if (cuboidDTO.getId() == null) {
+            throw new ResourceNotFoundException("Cuboid id can't be null");
+        }
+        validateBagCapacity(cuboidDTO);
+        Cuboid cuboid = getCuboidById(cuboidDTO.getId());
+        Bag bag = getBagById(cuboidDTO.getBagId());
+        cuboid.setBag(bag);
+        cuboid = repository.save(cuboid);
+        return mapper.map(cuboid, CuboidDTO.class);
+    }
+
+    /**
+     * Delete cuboid by id.
+     *
+     * @param cuboidId
+     * @return void
+     */
+    public void delete(long cuboidId) {
+        Cuboid cuboid = getCuboidById(cuboidId);
+        repository.delete(cuboid);
+    }
+
 }
