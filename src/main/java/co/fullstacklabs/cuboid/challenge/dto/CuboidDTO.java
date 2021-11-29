@@ -25,4 +25,9 @@ public class CuboidDTO {
 
     @NotNull(message = "Cuboid related bag can't be null.")
     private Long bagId;
+
+    public double calculateVolume() {
+        this.setVolume((double) (this.getWidth() * this.getHeight() * this.getDepth()));
+        return this.getVolume();
+    }
 }
